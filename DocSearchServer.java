@@ -36,7 +36,27 @@ class Handler implements URLHandler {
       this.files = FileHelpers.getFiles(Paths.get(directory));
     }
     public String handleRequest(URI url) throws IOException {
-      return "Don't know how to handle that path!";
+        if (url.getPath().equals("/")) {
+            return String.format("There are %d files to search", files.size());
+        } else if (url.getPath().contains("/search")) {
+            System.out.println("found search");
+            String[] parameters1 = url.getQuery().split("=");
+            if (parameters1[0].equals("q")) {
+                int count = 0;
+                ArrayList<File> results = new ArrayList<File>();
+                for (int i = 0; i < files.size(); i++) { 
+
+                if(FileHelpers.readFile(files.get(i)).contains(parameters1[1])){
+                    count++;
+                    results.add(files.get(i));
+                }
+            }
+                return new String("There were " + count + " files found:" + results.toString());
+        } 
+    }
+           
+        
+        return "Don't know how to handle that path!";
     }
 }
 
@@ -52,4 +72,6 @@ class DocSearchServer {
         Server.start(port, new Handler("./technical/"));
     }
 }
+
+
 
